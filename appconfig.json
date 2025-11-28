@@ -3,6 +3,6 @@
     "description": "Scrapes item, quantity, and price from the Grand Exchange sale history tab.",
     "appUrl": "./index.html",
     "configUrl": "./appconfig.json",
-    "requiredpermissions": "screen"
+    "permissions": "pixel,gamestate,overlay"
 }
 
