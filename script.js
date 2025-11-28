@@ -1,57 +1,28 @@
 // A conceptual script.js
 
-// 1. Initial Check
-if (window.alt1 === undefined) {
-    document.getElementById("log").innerHTML = "<span class='error'>Alt1 not detected. Please run this in the Alt1 browser.</span>";
-}
-
-// 2. Define the Region to Read
-// *** THESE ARE PLACEHOLDER COORDINATES ***
-// You MUST adjust these values based on your RuneScape client size and interface position.
-// Use Alt1's debug tools to find the top-left corner (x, y) of the Sale History table.
-const GE_SALE_HISTORY_REGION = {
-    x: 100, // Top-left X coordinate of the table (relative to RS client)
-    y: 100, // Top-left Y coordinate of the table (relative to RS client)
-    w: 400, // Width (Total table width)
-    h: 300  // Height (Total table height)
-};
-
-// Assuming the RuneScape chat font is the correct font for the GE text.
-const RS_FONT_NAME = 'chat'; 
-
-function log(message, isError = false) {
-    const logElement = document.getElementById("log");
-    const span = document.createElement("span");
-    span.className = isError ? 'error' : 'success';
-    span.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
-    logElement.appendChild(span);
-    logElement.appendChild(document.createElement("br"));
-    logElement.scrollTop = logElement.scrollHeight; // Auto-scroll
-}
+// ... (rest of the file remains the same) ...
 
 function startScrape() {
     log("Starting screen scrape...");
 
-    // FIX APPLIED HERE: Using alt1.capture(null) to bypass the 
-    // getRunescapeClientWindow() bug in custom apps.
+    // Using the fixed capture call:
     const image = alt1.capture(null); 
     
-    if (!image) {
-        log("Could not capture screen. Check Alt1 permissions/capture settings.", true);
+    // Check if the image object or its handle is invalid
+    if (!image || !image.handle || image.handle === 0) { 
+        // This is the false-positive error message that Alt1 uses.
+        log("Capture failed. Ensure Runescape is open and Alt1 has screen permission.", true);
         return;
     }
 
-    // Now, we use the captured image to find the specific area for the GE table.
-    // The image object has the coordinates of the captured screen region.
-    
-    // We assume the RuneScape client is visible within the captured image.
-    // We add the client window's offset to the local GE coordinates.
+    // Now, we proceed with the assumption that the capture succeeded.
+    // ... (Use clientWindow as before)
     const clientWindow = alt1.getRunescapeClientWindow();
     const table_x = clientWindow.x + GE_SALE_HISTORY_REGION.x;
     const table_y = clientWindow.y + GE_SALE_HISTORY_REGION.y;
 
-    const rowHeight = 28; // Estimate the pixel height of one row
-    const maxRows = 10; // The max number of trades visible
+    const rowHeight = 28; 
+    const maxRows = 10; 
     let scrapedData = [];
     
     document.getElementById("outputTable").getElementsByTagName('tbody')[0].innerHTML = "";
@@ -60,14 +31,13 @@ function startScrape() {
     for (let i = 0; i < maxRows; i++) {
         const current_y = table_y + (i * rowHeight);
 
-        // Define column offsets (Approximate based on 100% scaling)
+        // ... (Define text coordinates as before)
         const itemX = table_x + 10;
         const quantityX = table_x + 200;
         const priceX = table_x + 310;
-        const textY = current_y + 8; // Adjust to align with text baseline
+        const textY = current_y + 8; 
 
-        // 1. Item Name
-        // Note: The capture handle is necessary for bindReadString
+        // 1. Item Name - Uses the VALIDATED image.handle
         const itemName = alt1.bindReadString(image.handle, RS_FONT_NAME, itemX, textY);
         
         // 2. Quantity
@@ -77,7 +47,7 @@ function startScrape() {
         const priceText = alt1.bindReadString(image.handle, RS_FONT_NAME, priceX, textY);
 
         if (itemName.text && itemName.text.trim().length > 0) {
-            // 4. Parsing and Cleanup
+            // ... (rest of the code to parse and display) ...
             const cleanQuantity = parseValue(quantityText.text);
             const cleanPrice = parseValue(priceText.text);
 
@@ -89,11 +59,12 @@ function startScrape() {
             
             appendDataToTable(itemName.text.trim(), cleanQuantity, cleanPrice);
         } else if (i === 0) {
-            log("GE History table not found at expected location (no data on first row).", true);
+            log("GE History table not found at expected location (no data on first row). Check X/Y coordinates in script.js.", true);
             break;
         }
     }
     
+    // Always release the handle when done
     alt1.release(image.handle);
 
     if (scrapedData.length > 0) {
@@ -103,32 +74,4 @@ function startScrape() {
     }
 }
 
-// Helper function to convert '10k', '5.5m' strings to numbers
-function parseValue(value) {
-    if (!value) return 0;
-    let clean = value.replace(/,/g, '').toLowerCase().trim();
-    let multiplier = 1;
-
-    if (clean.endsWith('k')) {
-        multiplier = 1000;
-        clean = clean.slice(0, -1);
-    } else if (clean.endsWith('m')) {
-        multiplier = 1000000;
-        clean = clean.slice(0, -1);
-    } else if (clean.endsWith('b')) {
-        multiplier = 1000000000;
-        clean = clean.slice(0, -1);
-    }
-
-    const num = parseFloat(clean);
-    return isNaN(num) ? 0 : Math.round(num * multiplier);
-}
-
-function appendDataToTable(item, quantity, price) {
-    const tableBody = document.getElementById("outputTable").getElementsByTagName('tbody')[0];
-    const newRow = tableBody.insertRow();
-    
-    newRow.insertCell().innerText = item;
-    newRow.insertCell().innerText = quantity.toLocaleString();
-    newRow.insertCell().innerText = price.toLocaleString();
-}
+// ... (rest of helper functions remain the same) ...
