@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GE History Scraper</title>
+    <script src="alt1api.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 10px; }
+        #log { white-space: pre-wrap; font-size: 12px; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { border: 1px solid #555; padding: 4px; text-align: left; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>💰 GE Sale History Scraper</h2>
+    <button onclick="startScrape()">Start Scrape</button>
+    <p>
+        <small>Instructions: Have the Grand Exchange interface open, and the 'Sale History' tab visible.</small>
+    </p>
+
+    <h3>Scraped Data</h3>
+    <table class="data-table" id="outputTable">
+        <thead>
+            <tr><th>Item</th><th>Quantity</th><th>Price (GP)</th></tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <hr>
+    <h3>Log</h3>
+    <div id="log">Awaiting action...</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
