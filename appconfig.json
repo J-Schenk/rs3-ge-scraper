@@ -1,0 +1,7 @@
+{
+    "appname": "GE History Scraper",
+    "description": "Scrapes item, quantity, and price from the Grand Exchange sale history tab.",
+    "icon": "https://i.imgur.com/your-icon-link.png", 
+    "url": "https://j-schenk.github.io/rs3-ge-scraper/index.html",
+    "requiredpermissions": ["screen"]
+}
